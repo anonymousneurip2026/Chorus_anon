@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHORUS | Mission Control Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-black: #050505;
+            --card-bg: #0d0d0d;
+            --accent-blue: #0070f3;
+            --accent-glow: rgba(0, 112, 243, 0.3);
+            --text-main: #e0e0e0;
+            --text-muted: #888;
+            --border-color: #222;
+            --success-green: #00ff88;
+            --warning-amber: #ffcc00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #fff, #888);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--success-green);
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.05);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--success-green);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px var(--success-green);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                opacity: 0.4;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            border-color: #333;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-block {
+            position: relative;
+            background: #000;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #888;
+            border: 1px solid #1a1a1a;
+            margin-bottom: 20px;
+        }
+
+        .code-block code {
+            color: #eee;
+            display: block;
+            margin-top: 8px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #111;
+            border: 1px solid #222;
+            color: #555;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: #222;
+            color: #fff;
+            border-color: #444;
+        }
+
+        .log-terminal {
+            height: 400px;
+            background: #000;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            overflow-y: auto;
+            border: 1px solid #1a1a1a;
+            color: #555;
+        }
+
+        .log-line {
+            margin-bottom: 6px;
+        }
+
+        .log-ts {
+            color: #333;
+            margin-right: 10px;
+        }
+
+        .log-info {
+            color: var(--accent-blue);
+        }
+
+        .log-warn {
+            color: var(--warning-amber);
+        }
+
+        .log-success {
+            color: var(--success-green);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #111;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #1a1a1a;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .progress-container {
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--accent-blue), #00aaff);
+            width: 75%;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .artifact-list {
+            list-style: none;
+        }
+
+        .artifact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-bottom: 1px solid #1a1a1a;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .artifact-item:last-child {
+            border-bottom: none;
+        }
+
+        .artifact-icon {
+            width: 16px;
+            height: 16px;
+            color: #444;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #222;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <img src="chorus_logo.png" width="60" alt="Logo">
+                <div class="logo">CHORUS MISSION CONTROL</div>
+            </div>
+            <div class="status-badge">
+                <span class="pulse"></span> System Online
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="left-col">
+                <section class="card">
+                    <h2><svg class="artifact-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <polyline points="4 17 10 11 4 5"></polyline>
+                            <line x1="12" y1="19" x2="20" y2="19"></line>
+                        </svg> Active Sweeps</h2>
+
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                        <span style="color: #444;"># Deploy TCGA-LUNG 16-Shot Sweep</span>
+                        <code>bash run_lung_sweep.sh 0 16</code>
+                    </div>
+
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+                        <span style="color: #444;"># Deploy TCGA-RCC 16-Shot Sweep</span>
+                        <code>bash run_rcc_sweep.sh 1 16</code>
+                    </div>
+                </section>
+
+                <section class="card" style="margin-top: 30px;">
+                    <h2><svg class="artifact-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg> Live Log Stream</h2>
+                    <div class="log-terminal" id="terminal">
+                        <div class="log-line"><span class="log-ts">[10:15:01]</span> <span class="log-info">INFO</span>
+                            Initializing CHORUS framework...</div>
+                        <div class="log-line"><span class="log-ts">[10:15:03]</span> <span class="log-info">INFO</span>
+                            Detected 3 Encoders: UNI, GigaPath, ResNet50</div>
+                        <div class="log-line"><span class="log-ts">[10:15:04]</span> <span class="log-info">INFO</span>
+                            Loading frozen CONCH backbone (86.8M params)</div>
+                        <div class="log-line"><span class="log-ts">[10:15:06]</span> <span class="log-info">INFO</span>
+                            Trainable parameters: 1,327,620</div>
+                        <div class="log-line"><span class="log-ts">[10:15:10]</span> <span
+                                class="log-success">SUCCESS</span> GCCA alignment artifacts loaded for TCGA-NSCLC</div>
+                        <div class="log-line"><span class="log-ts">[10:15:15]</span> <span class="log-info">INFO</span>
+                            Starting Fold 0 / Variant: v4_hybrid</div>
+                        <div class="log-line"><span class="log-ts">[10:22:40]</span> <span class="log-info">INFO</span>
+                            Epoch 15/100 complete | Loss: 0.3122 | AUC: 0.9421</div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="right-col">
+                <section class="card">
+                    <h2>Live Statistics</h2>
+                    <div class="stat-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">LUNG AUC</div>
+                            <div class="stat-value" style="color: var(--success-green);">0.965</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">RCC AUC</div>
+                            <div class="stat-value" style="color: var(--success-green);">0.951</div>
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="stat-label">Total Sweep Progress</div>
+                        <div class="stat-value">75%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 12px;">Fold 4 of 5 currently
+                            active</p>
+                    </div>
+                </section>
+
+                <section class="card" style="margin-top: 30px;">
+                    <h2>Production Artifacts</h2>
+                    <ul class="artifact-list">
+                        <li class="artifact-item">
+                            <svg class="artifact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            visual_cca_LUNG.npz
+                        </li>
+                        <li class="artifact-item">
+                            <svg class="artifact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            visual_cca_RCC.npz
+                        </li>
+                        <li class="artifact-item">
+                            <svg class="artifact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="9" y1="21" x2="9" y2="9"></line>
+                            </svg>
+                            CHORUS_results.csv
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyCode(btn) {
+            const code = btn.nextElementSibling.nextElementSibling.innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = 'COPIED!';
+                btn.style.color = '#00ff88';
+                btn.style.borderColor = '#00ff88';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.color = '#555';
+                    btn.style.borderColor = '#222';
+                }, 2000);
+            });
+        }
+
+        // Auto-scroll terminal
+        const term = document.getElementById('terminal');
+        term.scrollTop = term.scrollHeight;
+    </script>
+</body>
+
+</html>
