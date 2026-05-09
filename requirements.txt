@@ -1,0 +1,12 @@
+torch>=2.2.0
+torchvision>=0.17.0
+numpy>=1.26.0
+pandas>=2.2.0
+h5py>=3.10.0
+ml_collections>=0.1.1
+scikit-learn>=1.4.0
+flask>=3.0.0
+timm>=0.9.0
+transformers>=4.37.0
+conch>=0.1.0
+clip @ git+https://github.com/openai/CLIP.git
